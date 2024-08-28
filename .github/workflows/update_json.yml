@@ -38,6 +38,7 @@ jobs:
           fi
 
           # Extract 'uat' section from the YAML and update the JSON using Python
+          pip install pyyaml
           python update_json2.py
 
       - name: Commit and Push Changes
