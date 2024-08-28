@@ -1,8 +1,8 @@
 import yaml
 import json
 
-YAML_FILE = 'D:/PYTHON/POC/config2.yaml'
-JSON_FILE= 'D:/PYTHON/POC/test.json'
+YAML_FILE = 'config2.yaml'
+JSON_FILE= 'test.json'
 
 # Read the full YAML file
 with open( YAML_FILE, 'r') as yaml_file:
