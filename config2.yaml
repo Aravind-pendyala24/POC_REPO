@@ -27,9 +27,9 @@ deliverables:
     - name: 'nav-toc'
       value: 'partial'
 uat:
-  ac-disc: 22.43.3
-  as-admin: 2.13.43
-  ar-user: 322.3.93
+  ac-disc: 22.46.3
+  as-admin: 24.13.43
+  ar-user: 32.3.93
 
 codes:
   ac-disc-code: AQWD
