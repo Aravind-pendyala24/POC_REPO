@@ -1,0 +1,56 @@
+name: Update JSON from YAML Changes
+
+on:
+ # push:
+   # paths:
+     # - '*.yaml'  # Trigger when any .yaml file is modified in the repo
+  workflow_dispatch:
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Ensure Python 3.x is installed
+
+      - name: Extract Section and Update JSON
+        run: |
+          # Define the paths for the YAML and JSON files
+          YAML_FILE="path/to/your/file.yaml"  # Update with the path to your YAML file
+          JSON_FILE="path/to/your/existing.json"  # Update with the path to your existing JSON file
+
+          # Check if the YAML file exists
+          if [ ! -f "$YAML_FILE" ]; then
+            echo "YAML file not found!"
+            exit 1
+          fi
+
+          # Check if the JSON file exists
+          if [ ! -f "$JSON_FILE" ]; then
+            echo "JSON file not found!"
+            exit 1
+          fi
+
+          # Extract 'uat' section from the YAML and update the JSON using Python
+          python update_json2.py
+
+      - name: Commit and Push Changes
+        run: |
+          # Configure Git settings
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add and commit the updated JSON file
+          git add $JSON_FILE
+          git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
+
+          # Push changes back to the repository
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
