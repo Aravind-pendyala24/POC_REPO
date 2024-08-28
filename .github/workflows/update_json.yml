@@ -22,8 +22,8 @@ jobs:
       - name: Extract Section and Update JSON
         run: |
           # Define the paths for the YAML and JSON files
-          YAML_FILE="path/to/your/file.yaml"  # Update with the path to your YAML file
-          JSON_FILE="path/to/your/existing.json"  # Update with the path to your existing JSON file
+          YAML_FILE="config2.yaml"  # Update with the path to your YAML file
+          JSON_FILE="test.json"  # Update with the path to your existing JSON file
 
           # Check if the YAML file exists
           if [ ! -f "$YAML_FILE" ]; then
