@@ -56,6 +56,7 @@ jobs:
           git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
 
           # Push changes back to the repository
-          git push https://github-actions[bot]:GITHUB_TOKEN@github.com/Aravind-pendyala24/POC_REPO.git
+          #git push https://github-actions[bot]:GITHUB_TOKEN@github.com/Aravind-pendyala24/POC_REPO.git
+          git push origin main
        # env:
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
