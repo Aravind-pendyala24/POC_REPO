@@ -48,7 +48,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add and commit the updated JSON file
-          git add $JSON_FILE
+          # git add $JSON_FILE
+          git add test.json
           git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
 
           # Push changes back to the repository
