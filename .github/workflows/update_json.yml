@@ -42,6 +42,8 @@ jobs:
           python update_json2.py
 
       - name: Commit and Push Changes
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Configure Git settings
           git config --global user.name "github-actions[bot]"
@@ -53,6 +55,6 @@ jobs:
           git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
 
           # Push changes back to the repository
-          git push https://github-actions[bot]:${{ secrets.GITHUB_TOKEN }}@github.com/Aravind-pendyala24/POC_REPO.git
+          git push
        # env:
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
