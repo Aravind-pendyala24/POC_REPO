@@ -46,7 +46,7 @@ jobs:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Configure Git settings
-          git remote add origin https://github.com/Aravind-pendyala24/POC_REPO.git
+          #git remote add origin https://github.com/Aravind-pendyala24/POC_REPO.git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -56,6 +56,6 @@ jobs:
           git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
 
           # Push changes back to the repository
-          git push https://github-actions[bot]:$GITHUB_TOKEN@github.com/Aravind-pendyala24/POC_REPO.git
+          git push https://github-actions[bot]:GITHUB_TOKEN@github.com/Aravind-pendyala24/POC_REPO.git
        # env:
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
