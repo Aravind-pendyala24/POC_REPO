@@ -28,7 +28,7 @@ deliverables:
       value: 'partial'
 uat:
   ac-disc: 22.46.3
-  as-admin: 24.13.43
+  as-admin: 24.13.43.90
   ar-user: 32.3.93
 
 codes:
