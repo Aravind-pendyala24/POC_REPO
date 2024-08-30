@@ -1,0 +1,44 @@
+def processYamlFile(String yamlFilePath, String scriptPath) {
+    def tag = null
+    def portalcode = null
+    def appName = null
+
+    // Read the YAML file line by line
+    new File(yamlFilePath).eachLine { line ->
+        line = line.trim()  // Remove leading and trailing whitespace
+
+        if (line.startsWith('uat:')) {
+            // Skip the 'uat:' line
+            return
+        } else if (line.startsWith('tag:')) {
+            tag = line.split(':')[1].trim()
+        } else if (line.startsWith('portalcode:')) {
+            portalcode = line.split(':')[1].trim()
+
+            // Execute the shell script with tag and portalcode as arguments
+            if (tag && portalcode) {
+                def command = "${scriptPath} ${tag} ${portalcode}"
+                def process = command.execute()
+                process.waitFor()
+
+                // Output the result
+                println process.text
+                if (process.exitValue() != 0) {
+                    println "Error executing script for ${appName}: ${process.err.text}"
+                }
+
+                // Reset variables for the next application
+                tag = null
+                portalcode = null
+            }
+        } else if (!line.isEmpty() && !line.endsWith(':')) {
+            // Capture the app name (e.g., 'ac_app', 'ad_app2')
+            appName = line.split(':')[0].trim()
+        }
+    }
+}
+
+processYamlFile('/var/lib/jenkins/sample.yaml', './var/lib/jenkins/script.sh')
+
+
+

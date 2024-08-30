@@ -1,0 +1,25 @@
+uat:
+  ac_app:
+    tag: 2.4.1
+    portalcode: AVSA
+  ad_app2:
+    tag: 2.1.4
+    portalcode: WESA
+  ai_app3:
+    tag: 3.8.9
+    portalcode: QWXC
+  a2_app3:
+    tag: 3.8.9.0
+    portalcode: QWXY
+  as_app3:
+    tag: 3.8.3
+    portalcode: QWXQ
+  a8_app3:
+    tag: 3.10.89
+    portalcode: QWAS
+
+
+
+
+
+

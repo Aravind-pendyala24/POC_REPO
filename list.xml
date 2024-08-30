@@ -1,0 +1,26 @@
+<env name="app1" code="AVSA" stack="AAA" envtype="AW" tag="2.9.7">
+<item name="app1" code="AVSA" deployurl="some_url" nameurl="same_url" deploytext="deploy" nametext="name" appurl="nothing" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+</env>
+
+<env name="app2" code="WESA" stack="AAA" envtype="AW" tag="2.7.3">
+<item name="app2" code="WESA" deployurl="somet_url" nameurl="samet_url" deploytext="deploy" nametext="name" appurl="nothingt" target="_blank" ldeploy="05/29/2023 22:08 CDT"/>
+</env>
+
+<env name="app1" code="QWXC" stack="AAA" envtype="AW" tag="2.1.7">
+<item name="app1" code="QWXC" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+</env>
+
+<env name="app7" code="QWXY" stack="AAA" envtype="AW" tag="2.4.7">
+<item name="app7" code="QWXY" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+</env>
+
+<env name="app9" code="QWXQ" stack="AAA" envtype="AW" tag="2.6.7">
+<item name="app9" code="QWXQ" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+</env>
+
+<env name="app10" code="QWAS" stack="AAA" envtype="AW" tag="2.4.7">
+<item name="app10" code="QWAS" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+</env>
+
+
+
