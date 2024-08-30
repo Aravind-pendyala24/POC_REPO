@@ -38,19 +38,25 @@ jobs:
           fi
 
           # Extract 'uat' section from the YAML and update the JSON using Python
+          pip install pyyaml
           python update_json2.py
 
       - name: Commit and Push Changes
+       # with:
+        # token: ${{ secrets.TOKEN }}
         run: |
           # Configure Git settings
+          #git remote add origin https://github.com/Aravind-pendyala24/POC_REPO.git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add and commit the updated JSON file
-          git add $JSON_FILE
+          # git add $JSON_FILE
+          git add test.json
           git commit -m "Update JSON file with changes from YAML: $JSON_FILE"
 
           # Push changes back to the repository
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
+          #git push https://${GITHUB_TOKEN}@github.com/Aravind-pendyala24/POC_REPO.git
+          git push origin main
+       # env:
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication

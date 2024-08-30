@@ -26,7 +26,7 @@ deliverables:
       value: 'no'
     - name: 'nav-toc'
       value: 'partial'
-apps:
+uat:
   ac-disc: 22.43.3
   as-admin: 2.13.43
   ar-user: 322.3.93

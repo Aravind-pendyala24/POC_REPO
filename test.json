@@ -1,9 +1,9 @@
 {
     "uat": {
-        "ac-disc": "22.43.3",
+        "ac-disc": "22.46.3",
         "ac-admin": "27.8.1",
-        "ar-user": "322.3.93",
-        "as-admin": "2.13.43"
+        "ar-user": "32.3.93",
+        "as-admin": "24.13.43.90"
     },
     "codes": {
         "ac-disc-code": "AQWD",

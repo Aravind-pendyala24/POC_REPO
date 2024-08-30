@@ -1,8 +1,8 @@
 import yaml
 import json
 
-input_file = 'D:/PYTHON/POC/config2.yaml'  # Path to your YAML file
-output_file = 'D:/PYTHON/POC/test.json'  # Path to save the converted JSON file
+input_file = 'config2.yaml'  # Path to your YAML file
+output_file = 'test.json'  # Path to save the converted JSON file
 
 # Load the YAML file
 with open(input_file, 'r') as yaml_file:
