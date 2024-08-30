@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout the source code from GitHub
+                checkout scm
+            }
+        }
+        
+        stage('Install jq') {
+            steps {
+                // Install jq (JSON processor) if not already installed
+                sh 'sudo apt-get update && sudo apt-get install -y jq'
+            }
+        }
+
+        stage('Update JSON File') {
+            steps {
+                // Run the shell script to update the JSON file
+                sh 'bash update_json.sh'  // Make sure to update the path if necessary
+            }
+        }
+    }
+}
