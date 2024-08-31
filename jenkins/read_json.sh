@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Define paths to YAML files and the JSON file
-UAT_YAML="/home/aravind/test/POC2/uat.yaml"        # Update with actual path to uat.yaml
-STAGING_YAML="/home/aravind/test/POC2/staging.yaml" # Update with actual path to staging.yaml
-JSON_FILE="/home/aravind/test/POC2/test.json"     # Update with actual path to the JSON file
+UAT_YAML="jenkins/uat.yaml"        # Update with actual path to uat.yaml
+STAGING_YAML="jenkins/staging.yaml" # Update with actual path to staging.yaml
+JSON_FILE="jenkins/test.json"     # Update with actual path to the JSON file
 
 # Function to read YAML and extract values
 read_yaml() {
