@@ -1,26 +1,26 @@
 {
-    "uat": {
-        "ac-disc": "22.43.3",
-        "ac-admin": "27.8.1",
-        "ar-user": "322.3.93",
-        "as-admin": "2.13.43"
-    },
-    "uat-codes": {
-        "ac-disc-code": "AQWD",
-        "ac-admin-code": "WESA",
-        "ar-user-code": "MJNH",
-        "as-admin-code": "UYJI"
-    },
-    "staging": {
-        "ac-disc": "22.43.3",
-        "ac-admin": "27.8.1",
-        "ar-user": "322.3.93",
-        "as-admin": "2.13.43"
-    },
-    "staging-codes": {
-        "ac-disc-code": "AQWD",
-        "ac-admin-code": "IESA",
-        "ar-user-code": "MPNH",
-        "as-admin-code": "OYJI"
-    }
+  "uat": {
+    "ac-disc": "22.43.3",
+    "ac-admin": "2.13.43",
+    "ar-user": "322.3.93",
+    "as-admin": "23.34.1"
+  },
+  "uat-codes": {
+    "ac-disc-code": "AQWD",
+    "ac-admin-code": "WESA",
+    "ar-user-code": "MJNH",
+    "as-admin-code": "UYJI"
+  },
+  "staging": {
+    "ac-disc": "227.43.3.89",
+    "ac-admin": "27.13.43.78",
+    "ar-user": "372.3.93.3",
+    "as-admin": "67.89.8.9"
+  },
+  "staging-codes": {
+    "ac-disc-code": "AQWD",
+    "ac-admin-code": "IESA",
+    "ar-user-code": "MPNH",
+    "as-admin-code": "OYJI"
+  }
 }
