@@ -1,0 +1,35 @@
+pipeline{
+    agent any
+    stages{
+        stage("checkout code"){
+            steps{
+                git branch: 'main', url: 'https://github.com/Aravind-pendyala24/POC_REPO.git'
+            }
+        }
+        stage("Shell"){
+            steps{
+                sh "ls -lrt"
+                sh "pwd"
+            }
+        }
+        stage("execute shell script"){
+            steps{
+                sh "sh /var/lib/jenkins/workspace/POC/jenkins/read_json.sh"
+            }
+        }
+        stage("commit json file back to repo"){
+            steps{
+                withCredentials([string(credentialsId: 'Git_token', variable: 'Github')]) {
+                    sh '''
+                    git config user.email "jenkins@jenkinsbot.com"
+                    git config user.name "jenkins"
+                    git add jenkins/test.json
+                    git commit -m "Updated JSON file"
+                    git push https://${Github}@github.com/Aravind-pendyala24/POC_REPO.git
+                    '''
+                }
+                    
+            }
+        }
+    }
+}
