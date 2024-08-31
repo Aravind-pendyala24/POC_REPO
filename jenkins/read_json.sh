@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Define paths to YAML files and the JSON file
 UAT_YAML="jenkins/uat.yaml"        # Update with actual path to uat.yaml
 STAGING_YAML="jenkins/staging.yaml" # Update with actual path to staging.yaml
