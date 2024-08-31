@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_PAT = credentials('git-token') // Replace with the ID of your Jenkins secret
+    }
+
+    stages {
+        stage('Checkout Code from Source Repository') {
+            steps {
+                // Checkout code from the source GitHub repository
+                git url: 'https://github.com/Aravind-pendyala24/POC_REPO.git', branch: 'main'
+            }
+        }
+        stage('Run Shell Script to Update JSON') {
+            steps {
+                script {
+                    // Run the shell script located in the app directory
+                    sh 'cd jenkins && ./read_json.sh'
+                }
+            }
+        }
+        stage('Commit Updated JSON to Target Repository') {
+            steps {
+                script {
+                    // Clone the target repository using the personal access token
+                    sh '''
+                    git clone https://$GIT_PAT@github.com/Aravind-pendyala24/second-poc-target-repo.git
+                    '''
+
+                    // Copy the updated JSON file to the 'tags' folder of the target repository
+                    sh 'cp jenkins/test.json target/tags/'
+
+                    // Commit and push the changes to the target repository
+                    dir('target') {
+                        sh '''
+                        git config user.name "Jenkins"
+                        git config user.email "jenkins@example.com"
+                        git add tags/updated-file.json
+                        git commit -m "Update JSON file"
+                        git push origin main
+                        '''
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            // Clean up workspace after build
+            cleanWs()
+        }
+    }
+}
