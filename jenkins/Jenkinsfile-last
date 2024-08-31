@@ -29,14 +29,14 @@ pipeline {
                     '''
 
                     // Copy the updated JSON file to the 'tags' folder of the target repository
-                    sh 'cp jenkins/test.json target/tags/'
+                    sh 'cp jenkins/test.json second-poc-target-repo/tags/'
 
                     // Commit and push the changes to the target repository
                     dir('target') {
                         sh '''
                         git config user.name "Jenkins"
                         git config user.email "jenkins@example.com"
-                        git add tags/updated-file.json
+                        git add tags/test.json
                         git commit -m "Update JSON file"
                         git push origin main
                         '''
