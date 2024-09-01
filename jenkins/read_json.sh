@@ -5,7 +5,7 @@ set -x
 # Define paths to YAML files and the JSON file
 UAT_YAML="../uat1.yaml"        # Update with actual path to uat.yaml
 STAGING_YAML="../staging1.yaml" # Update with actual path to staging.yaml
-JSON_FILE="jenkins/test.json"     # Update with actual path to the JSON file
+JSON_FILE="/jenkins/test.json"     # Update with actual path to the JSON file
 
 # Function to read YAML and extract values
 read_yaml() {
