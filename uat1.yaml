@@ -25,9 +25,9 @@ deliverables:
     - name: 'html5.toc.generate'
       value: 'no'
     - name: 'nav-toc'
-      value: 'partial'
+      value: 'partiali'
 apps:
   ac-disc: 12.34.45.67
   ac-admin: 23.56.67.8
-  ar-user: 90.89.09.8
+  ar-user: 90.89.09.9
   as-admin: 14.67.7.8
