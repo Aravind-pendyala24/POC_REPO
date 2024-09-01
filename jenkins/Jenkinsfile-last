@@ -16,7 +16,9 @@ pipeline {
             steps {
                 script {
                     // Run the shell script located in the app directory
-                    sh 'cd jenkins && ./read_json.sh'
+                    sh '''cd jenkins
+                    sh read_json.sh
+                    '''
                 }
             }
         }
@@ -32,12 +34,12 @@ pipeline {
                     sh 'cp jenkins/test.json second-poc-target-repo/tags/'
 
                     // Commit and push the changes to the target repository
-                    dir('target') {
+                    dir('second-poc-target-repo') {
                         sh '''
                         git config user.name "Jenkins"
                         git config user.email "jenkins@example.com"
                         git add tags/test.json
-                        git commit -m "Update JSON file"
+                        git commit --allow-empty -m "Update JSON file"
                         git push origin main
                         '''
                     }
