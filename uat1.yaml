@@ -27,7 +27,7 @@ deliverables:
     - name: 'nav-toc'
       value: 'partial'
 apps:
-  ac-disc: 22.43.31.8
-  ac-admin: 2.13.43.3
-  ar-user: 322.3.93.4
-  as-admin: 23.34.12.89
+  ac-disc: 12.34.45.67
+  ac-admin: 23.56.67.89
+  ar-user: 90.89.09.8
+  as-admin: 14.67.7.8
