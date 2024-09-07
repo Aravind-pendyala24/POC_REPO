@@ -6,10 +6,10 @@
     "as-admin": "23.34.12.89"
   },
   "uat-codes": {
-    "ac-disc-code": "AQWD",
-    "ac-admin-code": "WESA",
-    "ar-user-code": "MJNH",
-    "as-admin-code": "UYJI"
+    "ac-disc": "AQWD",
+    "ac-admin": "WESA",
+    "ar-user": "MJNH",
+    "as-admin": "UYJI"
   },
   "staging": {
     "ac-disc": "227.43.3.89",
@@ -18,9 +18,9 @@
     "as-admin": "67.89.8.9"
   },
   "staging-codes": {
-    "ac-disc-code": "AQWD",
-    "ac-admin-code": "IESA",
-    "ar-user-code": "MPNH",
-    "as-admin-code": "OYJI"
+    "ac-disc": "AQWD",
+    "ac-admin": "IESA",
+    "ar-user": "MPNH",
+    "as-admin": "OYJI"
   }
 }
