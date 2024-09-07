@@ -11,7 +11,9 @@ JSON_FILE="test.json"     # Update with actual path to the JSON file
 read_yaml() {
   local yaml_file="$1"
   local key="$2"
-  grep "^ *$key:" "$yaml_file" | sed -E "s/^ *$key: *(.*)/\1/"
+  #grep "^ *$key:" "$yaml_file" | sed -E "s/^ *$key: *(.*)/\1/"
+  awk '/^apps:/ {found=1; next} found && /^[^ ]/ {exit} found {print}' "$yaml_file" | \
+  grep "^  $key:" | sed -E "s/^  $key: *(.*)/\1/"
 }
 
 # Update JSON file with values from YAML files
