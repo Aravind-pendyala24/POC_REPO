@@ -14,8 +14,8 @@
 <item name="app4-uat" code="UYJI" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
 </env>
 
-<env name="app1-stag" code="AQWD" stack="AAA" envtype="AW" tag="2.6.7">
-<item name="app1-stag" code="AQWD" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
+<env name="app1-stag" code="AQWE" stack="AAA" envtype="AW" tag="2.6.7">
+<item name="app1-stag" code="AQWE" deployurl="some_urly" nameurl="same_urly" deploytext="deploy" nametext="name" appurl="nothingy" target="_blank" ldeploy="03/21/2023 22:08 CDT"/>
 </env>
 
 <env name="app2-stag" code="IESA" stack="AAA" envtype="AW" tag="2.6.7">
