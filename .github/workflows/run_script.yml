@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       input1:
-        description: 'First input'
+        description: 'Version'
         required: true
         default: 'default1'
       input2:
-        description: 'Second input'
+        description: 'Code'
         required: true
         default: 'default2'
 
@@ -22,5 +22,6 @@ jobs:
 
     - name: Run shell script with inputs
       run: |
-        chmod +x your-script.sh
-        ./your-script.sh "${{ github.event.inputs.input1 }}" "${{ github.event.inputs.input2 }}"
+        chmod +x scripts/script.sh
+        ./scripts/script.sh "${{ github.event.inputs.input1 }}" "${{ github.event.inputs.input2 }}"
+        cat list.xml
