@@ -23,5 +23,5 @@ jobs:
     - name: Run shell script with inputs
       run: |
         chmod +x scripts/script.sh
-        ./scripts/script.sh "${{ github.event.inputs.input1 }}" "${{ github.event.inputs.input2 }}"
+        ./scripts/script.sh ${{ github.event.inputs.input1 }} ${{ github.event.inputs.input2 }}
         cat list.xml
