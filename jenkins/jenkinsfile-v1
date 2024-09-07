@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'Deploy Environment', choices: ['uat', 'staging', 'qa2'], description: 'Select the deployment environment')
+    }
+    
+    environment {
+        GIT_PAT = credentials('git-token') // Replace with the ID of your Jenkins secret
+    }
+
+    stages {
+        stage('Checkout Code from Source Repository') {
+            steps {
+                // Checkout code from the source GitHub repository
+                git url: 'https://github.com/Aravind-pendyala24/POC_REPO.git', branch: 'main'
+                sh 'ls -lrt'
+                sh 'pwd'
+            }
+        }
+        
+        stage('Read JSON and Execute Script') {
+            steps {
+                script {
+                    // Read the JSON file from the 'portal smd' directory
+                    def jsonFile = readFile(file: 'jenkins/test.json')
+                    //need to install the pipeline utility steps plugin
+
+                    // Parse the JSON content
+                    def jsonContent = readJSON(text: jsonFile)
+                    def environment = params['Deploy Environment']
+                    def environmentCodes = environment + "-codes"
+
+                    // Iterate over the JSON data for the given environment
+                    jsonContent[environment].each { appName, appVersion ->
+                        def appCode = jsonContent[environmentCodes][appName]
+                        
+                        // Execute the shell script with the app version and code as arguments
+                        sh "sudo chmod +x scripts/script.sh"
+                        sh "scripts/script.sh ${appVersion} ${appCode}"
+                        //sh 'cat list.xml'
+                    }
+                    sh 'cat list.xml'
+                }
+            }
+        }
+    }
+}
