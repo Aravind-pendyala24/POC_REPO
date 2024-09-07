@@ -1,0 +1,26 @@
+name: Run Shell Script with Inputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      input1:
+        description: 'First input'
+        required: true
+        default: 'default1'
+      input2:
+        description: 'Second input'
+        required: true
+        default: 'default2'
+
+jobs:
+  execute-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Run shell script with inputs
+      run: |
+        chmod +x your-script.sh
+        ./your-script.sh "${{ github.event.inputs.input1 }}" "${{ github.event.inputs.input2 }}"
