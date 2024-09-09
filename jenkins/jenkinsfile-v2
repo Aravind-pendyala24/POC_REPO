@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO_URL = 'git@github.com:your-repo/your-private-repo.git' // Replace with your private Git repo URL
+        GIT_CREDENTIALS_ID = 'your-credentials-id' // Replace with your Jenkins credentials ID
+        REMOTE_SERVER = 'remote.server.com' // Replace with your remote server address
+        REMOTE_USER = 'remote-username' // Replace with your remote server username
+        SSH_KEY_ID = 'ssh-key-credentials-id' // Replace with your Jenkins SSH key credentials ID
+    }
+
+    parameters {
+        choice(name: 'Environment', choices: ['us-uat'], description: 'Select the environment for processing')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the private Git repository
+                git branch: 'main', 
+                    url: env.GIT_REPO_URL, 
+                    credentialsId: env.GIT_CREDENTIALS_ID
+            }
+        }
+
+        stage('Read JSON and Execute Script on Remote Server') {
+            steps {
+                script {
+                    // Read the JSON file from the 'scripts' directory
+                    def jsonFile = readFile(file: 'scripts/yourfile.json')
+
+                    // Parse the JSON content into a Groovy Map
+                    def jsonContent = readJSON(text: jsonFile)
+                    def environment = params.Environment
+                    def environmentCodes = environment + "-codes"
+
+                    // Check if the environment exists in the JSON content
+                    if (!jsonContent.containsKey(environment) || !jsonContent.containsKey(environmentCodes)) {
+                        error "Environment '${environment}' or its codes not found in JSON file."
+                    }
+
+                    // Iterate over the JSON data for the given environment
+                    jsonContent[environment].each { appName, appVersion ->
+                        def appCode = jsonContent[environmentCodes][appName]
+
+                        // Execute the shell script on the remote server with strict host key checking disabled
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY_ID} ${REMOTE_USER}@${REMOTE_SERVER} "bash -s" << 'EOF'
+                            ./script.sh ${appVersion} ${appCode}
+                            EOF
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
