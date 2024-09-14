@@ -4,13 +4,13 @@
 
 new_tag_txt=$1
 portal_code=$2
-file_name=./list.xml
+file_name=/poc/test/script/list.xml
 
 export TZ="America/Chicago"
 
 formatted_date=$(date "+%m/%d/%Y %H:%M %Z")
 
-lock_file="./list.lock"
+lock_file="/poc/test/script/list.lock"
 
 flock -n "$lock_file" -c "
        awk -i inplace -v portal_code=\"${portal_code}\" -v new_tag_txt=\"${new_tag_txt}\" '{if (\$0 ~ portal_code) gsub(/tag=\"[^\"]*\"/, \"tag=\\\"\"new_tag_txt \"\\\"\"); print}' \"${file_name}\"
