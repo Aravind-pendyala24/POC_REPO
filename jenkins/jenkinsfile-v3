@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'Environment', choices: ['us-uat','staging'], description: 'Select the environment for processing')
+    }
+    stages {
+        stage('Checkout Repo') {
+            steps {
+                // Checkout the private Git repository
+                git url: 'https://github.com/Aravind-pendyala24/POC_REPO.git', branch: 'main'
+            }
+        }
+
+        stage('Execute script on remote server') {
+            steps {
+                script {
+                    // Load JSON content from the file in the portal directory
+                    def jsonFile = readJSON file: 'jenkins/test.json'
+                    def environment = params.ENVIRONMENT
+                    def environmentCodes = "${environment}-codes"
+
+                    // Loop through the JSON content and pass as command-line arguments
+                    jsonFile[environment].each { app, version ->
+                        def code = jsonFile[environmentCodes][app]
+                        if (version && code) {
+                            // Command to execute the shell script on the remote server using SSH
+                            sh """
+                            ssh -o StrictHostKeyChecking=no user@remote-server "cd /path/to/scripts && ./script.sh ${version} ${code}"
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
