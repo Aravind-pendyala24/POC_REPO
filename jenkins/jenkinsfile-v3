@@ -25,7 +25,7 @@ pipeline {
                         if (version && code) {
                             // Command to execute the shell script on the remote server using SSH
                             sh """
-                            ssh -o StrictHostKeyChecking=no user@remote-server "cd /path/to/scripts && ./script.sh ${version} ${code}"
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY_ID} user@remote-server "cd /path/to/scripts && ./script.sh ${version} ${code}"
                             """
                         }
                     }
