@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set +x
+set +x
 
 new_tag_txt=$1
 portal_code=$2
