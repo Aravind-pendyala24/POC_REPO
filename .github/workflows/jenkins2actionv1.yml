@@ -1,0 +1,61 @@
+name: Deploy to Remote Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Select the environment for processing'
+        required: true
+        default: 'us-uat'
+        type: choice
+        options:
+          - us-uat
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      GIT_REPO_URL: 'git@github.com:your-repo/your-private-repo.git'  # Replace with your private Git repo URL
+      REMOTE_SERVER: 'remote.server.com'  # Replace with your remote server address
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}  # Replace with your remote server username stored in GitHub Secrets
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key stored in GitHub Secrets
+
+    steps:
+      # Step 1: Checkout the private Git repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.GIT_REPO_URL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 2: Set up SSH
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.REMOTE_SERVER }} >> ~/.ssh/known_hosts
+
+      # Step 3: Read JSON and Execute Script on Remote Server
+      - name: Read JSON and Execute Script
+        run: |
+          # Read the JSON file from the 'scripts' directory
+          json_file="scripts/yourfile.json"
+          environment="${{ github.event.inputs.Environment }}"
+          environment_codes="${environment}-codes"
+          
+          # Parse the JSON file using jq
+          json_content=$(cat ${json_file})
+          
+          # Iterate over the environment JSON and execute the script on the remote server
+          for app_name in $(echo "${json_content}" | jq -r ".${environment} | keys[]"); do
+            app_version=$(echo "${json_content}" | jq -r ".${environment}[\"${app_name}\"]")
+            app_code=$(echo "${json_content}" | jq -r ".${environment_codes}[\"${app_name}\"]")
+
+            # Execute the script on the remote server with strict host key checking disabled
+            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }} "bash -s" <<EOF \
+              ./script.sh ${app_version} ${app_code} \
+            EOF
+          done
+        shell: bash
