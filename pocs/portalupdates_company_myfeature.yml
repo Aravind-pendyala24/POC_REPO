@@ -1,0 +1,58 @@
+name: Remote Script Execution
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: 'Environment to process'
+        required: true
+        default: 'us-uat'
+
+jobs:
+  execute-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Read JSON and Execute Script
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}
+        run: |
+          # Read JSON file
+          JSON_FILE="portal/data.json"
+          ENVIRONMENT=${{ env.ENVIRONMENT }}
+          
+          # Check if jq is installed, install if not
+          if ! command -v jq &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+          # Get version and code data from JSON
+          VERSIONS=$(jq -r ".${ENVIRONMENT} | to_entries | .[]" $JSON_FILE)
+          CODES=$(jq -r ".${ENVIRONMENT}-codes | to_entries | .[]" $JSON_FILE)
+
+          # Define SSH parameters
+          REMOTE_HOST="your.remote.server.com"
+          SSH_USER="your-username"
+          REMOTE_SCRIPT="/path/to/scripts/script.sh"
+          SSH_OPTIONS="-i ~/.ssh/id_rsa -o StrictHostKeyChecking=no"
+
+          # Iterate through the version data and execute the script
+          echo "$VERSIONS" | while read -r appName version; do
+            code=$(echo "$CODES" | jq -r "select(.key==\"$appName\") | .value")
+            ssh $SSH_OPTIONS $SSH_USER@$REMOTE_HOST "$REMOTE_SCRIPT $version $code"
+          done
+          
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
