@@ -1,0 +1,54 @@
+name: Deploy to Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select an environment for deployment"
+        required: true
+        type: choice
+        options:
+          - us-uat
+          - eu-prod
+          - apac-dev
+      release_version:
+        description: "Release version to deploy (e.g., v1.2.3)"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+
+    - name: Parse inputs
+      id: parse_inputs
+      run: |
+        echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
+
+    - name: Retrieve code and execute deployment
+      run: |
+        # Load the JSON file
+        codes_json=$(cat env-codes.json)
+
+        # Retrieve the corresponding code for the selected environment
+        code=$(echo "$codes_json" | jq -r --arg env "${{ env.environment }}" '.[$env]')
+        if [ "$code" == "null" ] || [ -z "$code" ]; then
+          echo "Error: Code not found for environment ${{ env.environment }}"
+          exit 1
+        fi
+
+        # Execute the shell script with the release version and code
+        echo "Deploying to environment: ${{ env.environment }} with release version: ${{ env.release_version }} and code: $code"
+        ./deploy.sh "${{ env.release_version }}" "$code"
+
+    - name: Make deploy.sh executable
+      run: chmod +x deploy.sh
