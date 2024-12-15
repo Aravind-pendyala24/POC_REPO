@@ -1,0 +1,67 @@
+name: Upload Excel to SharePoint
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload-to-sharepoint:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Download the Excel file artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: excel-file
+          path: ./artifact
+
+      # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Step 3: Install required Python dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Office365-REST-Python-Client
+
+      # Step 4: Upload the file to SharePoint
+      - name: Upload to SharePoint
+        env:
+          SHAREPOINT_SITE_URL: ${{ secrets.SHAREPOINT_SITE_URL }}
+          SHAREPOINT_FOLDER_PATH: ${{ secrets.SHAREPOINT_FOLDER_PATH }}
+          SHAREPOINT_CLIENT_ID: ${{ secrets.SHAREPOINT_CLIENT_ID }}
+          SHAREPOINT_CLIENT_SECRET: ${{ secrets.SHAREPOINT_CLIENT_SECRET }}
+        run: |
+          python <<EOF
+          import os
+          from office365.runtime.auth.client_credential import ClientCredential
+          from office365.sharepoint.client_context import ClientContext
+
+          # Environment variables
+          site_url = os.getenv("SHAREPOINT_SITE_URL")
+          client_id = os.getenv("SHAREPOINT_CLIENT_ID")
+          client_secret = os.getenv("SHAREPOINT_CLIENT_SECRET")
+          folder_path = os.getenv("SHAREPOINT_FOLDER_PATH")
+
+          # Authenticate with SharePoint
+          credentials = ClientCredential(client_id, client_secret)
+          ctx = ClientContext(site_url).with_credentials(credentials)
+
+          # Get the uploaded Excel file
+          artifact_dir = "./artifact"
+          file_name = next((f for f in os.listdir(artifact_dir) if f.endswith(".xlsx")), None)
+          if not file_name:
+              raise FileNotFoundError("No Excel file found in the artifact directory.")
+
+          local_file_path = os.path.join(artifact_dir, file_name)
+
+          # Upload the file to SharePoint
+          print(f"Uploading {file_name} to SharePoint folder: {folder_path}")
+          with open(local_file_path, "rb") as file_content:
+              target_folder = ctx.web.get_folder_by_server_relative_url(folder_path)
+              target_folder.upload_file(file_name, file_content.read()).execute_query()
+
+          print(f"File {file_name} successfully uploaded to {folder_path}")
+          EOF
