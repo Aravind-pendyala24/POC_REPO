@@ -1,0 +1,28 @@
+name: Install Azure kubelogin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-kubelogin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Azure kubelogin
+        run: |
+          # Define variables
+          KUBELOGIN_VERSION=$(curl -s https://api.github.com/repos/Azure/kubelogin/releases/latest | jq -r .tag_name)
+          KUBELOGIN_URL="https://github.com/Azure/kubelogin/releases/download/${KUBELOGIN_VERSION}/kubelogin-linux-amd64.zip"
+
+          # Download and install kubelogin
+          curl -L -o kubelogin.zip $KUBELOGIN_URL
+          unzip kubelogin.zip -d kubelogin
+          sudo mv kubelogin/bin/linux_amd64/kubelogin /usr/local/bin/kubelogin
+          chmod +x /usr/local/bin/kubelogin
+
+      - name: Verify kubelogin installation
+        run: kubelogin --version
