@@ -1,0 +1,73 @@
+name: Deploy to Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select an environment for deployment"
+        required: true
+        type: choice
+        options:
+          - us-uat
+          - eu-prod
+          - apac-dev
+      release_version:
+        description: "Release version to deploy (e.g., v1.2.3)"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+
+    - name: Parse inputs
+      id: parse_inputs
+      run: |
+        echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
+
+    - name: Retrieve code and execute deployment with error handling
+      run: |
+        set -e  # Exit immediately on error
+        trap 'echo "Error occurred. Cleaning up..."; exit 1' ERR  # Catch block
+
+        echo "Starting deployment process..."
+
+        # Load the JSON file
+        if ! codes_json=$(cat env-codes.json); then
+          echo "Error: Failed to read env-codes.json"
+          exit 1
+        fi
+
+        # Retrieve the corresponding code for the selected environment
+        if ! code=$(echo "$codes_json" | jq -r --arg env "${{ env.environment }}" '.[$env]'); then
+          echo "Error: Failed to retrieve code for environment: ${{ env.environment }}"
+          exit 1
+        fi
+
+        # Validate that the code exists
+        if [ "$code" == "null" ] || [ -z "$code" ]; then
+          echo "Error: Code not found for environment ${{ env.environment }}"
+          exit 1
+        fi
+
+        echo "Environment: ${{ env.environment }} | Release Version: ${{ env.release_version }} | Code: $code"
+
+        # Execute the shell script
+        if ! ./deploy.sh "${{ env.release_version }}" "$code"; then
+          echo "Error: Deployment script failed for environment: ${{ env.environment }}"
+          exit 1
+        fi
+
+        echo "Deployment completed successfully."
+
+    - name: Make deploy.sh executable
+      run: chmod +x deploy.sh
