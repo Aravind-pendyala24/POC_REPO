@@ -1,0 +1,73 @@
+name: Deploy to Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select an environment for deployment"
+        required: true
+        type: choice
+        options:
+          - us-uat
+          - eu-prod
+          - apac-dev
+      release_version:
+        description: "Release version to deploy (e.g., v1.2.3)"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+
+    - name: Parse inputs
+      id: parse_inputs
+      run: |
+        echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
+
+    - name: Retrieve code and execute deployment with error handling
+      continue-on-error: true  # Ensures workflow continues as success even on errors
+      run: |
+        set +e  # Allow the script to continue even if errors occur
+
+        echo "Starting deployment process..."
+
+        # Load the JSON file
+        if ! codes_json=$(cat env-codes.json 2>/dev/null); then
+          echo "::error::Error: Failed to read env-codes.json. Skipping deployment."
+          exit 0
+        fi
+
+        # Retrieve the corresponding code for the selected environment
+        if ! code=$(echo "$codes_json" | jq -r --arg env "${{ env.environment }}" '.[$env]' 2>/dev/null); then
+          echo "::error::Error: Failed to parse code for environment: ${{ env.environment }}. Skipping deployment."
+          exit 0
+        fi
+
+        # Validate that the code exists
+        if [ "$code" == "null" ] || [ -z "$code" ]; then
+          echo "::error::Error: Code not found for environment ${{ env.environment }}. Skipping deployment."
+          exit 0
+        fi
+
+        echo "Environment: ${{ env.environment }} | Release Version: ${{ env.release_version }} | Code: $code"
+
+        # Execute the shell script
+        if ! ./deploy.sh "${{ env.release_version }}" "$code"; then
+          echo "::error::Error: Deployment script failed for environment: ${{ env.environment }}. Skipping deployment."
+          exit 0
+        fi
+
+        echo "Deployment completed successfully."
+
+    - name: Make deploy.sh executable
+      run: chmod +x deploy.sh
