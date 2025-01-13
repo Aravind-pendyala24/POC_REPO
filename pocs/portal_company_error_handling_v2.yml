@@ -1,0 +1,13 @@
+jobs:
+  example-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run a script with error handling
+        run: |
+          set -e
+          {
+            echo "Running command that might fail..."
+            command-that-might-fail
+          } || {
+            echo "An error occurred, handling it gracefully."
+          }
