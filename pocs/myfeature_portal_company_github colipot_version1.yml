@@ -1,0 +1,60 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Select the environment for processing'
+        required: true
+        default: 'uat'
+        type: choice
+        options:
+          - uat
+          - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTE_SERVER: '44.211.172.157' # Replace with your remote server address
+      REMOTE_USER: 'ubuntu' # Replace with your remote server username
+      SSH_KEY_NAME: 'key-creds' # Replace with the name of your SSH key secret
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY_NAME }}
+
+      - name: Read JSON and Execute Script on Remote Server
+        id: execute_script
+        run: |
+          # Read the JSON file from the 'scripts' directory
+          json_file=$(cat jenkins/test.json)
+          
+          # Parse the JSON content into a variable
+          json_content=$(echo "${json_file}" | jq -r '.')
+
+          environment="${{ github.event.inputs.Environment }}"
+          environment_codes="${environment}-codes"
+
+          # Check if the environment exists in the JSON content
+          if ! echo "${json_content}" | jq -e "has(\"${environment}\") and has(\"${environment_codes}\")" > /dev/null; then
+            echo "Environment '${environment}' or its codes not found in JSON file."
+            exit 1
+          fi
+
+          # Iterate over the JSON data for the given environment
+          echo "${json_content}" | jq -r "to_entries | map(select(.key == \"${environment}\") | .value | to_entries | .[]) | .key + \" \" + .value" | while read appName appVersion; do
+            appCode=$(echo "${json_content}" | jq -r ".${environment_codes}[\"${appName}\"]")
+            
+            # Execute the shell script from the repository on the remote server
+            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} "bash -s" < ./scripts/update.sh ${appVersion} ${appCode}
+          done
