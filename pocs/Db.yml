@@ -1,0 +1,83 @@
+name: Execute SQL Script on PostgreSQL
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "Select the repository (repo1 or repo2)"
+        required: true
+        type: choice
+        options:
+          - repo1
+          - repo2
+      branch:
+        description: "Branch to pull the SQL script from"
+        required: true
+        default: "main"
+      sql_script:
+        description: "SQL script file to execute (inside db_scripts/)"
+        required: true
+
+jobs:
+  execute-sql:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate with GitHub App
+        env:
+          APP_ID: ${{ secrets.GH_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private-key.pem
+          chmod 600 private-key.pem
+          INSTALLATION_ID=$(curl -s -X GET -H "Authorization: Bearer $(jwtgen private-key.pem $APP_ID)" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/app/installations" | jq -r '.[0].id')
+          ACCESS_TOKEN=$(curl -s -X POST -H "Authorization: Bearer $(jwtgen private-key.pem $APP_ID)" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens" | jq -r '.token')
+          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+          rm private-key.pem
+
+      - name: Checkout the selected repository
+        uses: actions/checkout@v4
+        with:
+          repository: "your-github-org/${{ github.event.inputs.repository }}"
+          ref: "${{ github.event.inputs.branch }}"
+          token: ${{ env.ACCESS_TOKEN }}
+
+      - name: Copy SQL scripts from db_scripts/ to DB server
+        env:
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_SSH_USER: ${{ secrets.DB_SSH_USER }}
+          DB_SSH_PASSWORD: ${{ secrets.DB_SSH_PASSWORD }}
+        run: |
+          sudo apt-get install -y sshpass
+          sshpass -p "$DB_SSH_PASSWORD" scp -o StrictHostKeyChecking=no \
+            "db_scripts/${{ github.event.inputs.sql_script }}" $DB_SSH_USER@$DB_SERVER:/path/to/sql-scripts/
+
+      - name: Execute SQL script on DB server and capture log
+        env:
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_SSH_USER: ${{ secrets.DB_SSH_USER }}
+          DB_SSH_PASSWORD: ${{ secrets.DB_SSH_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          LOG_FILE="/path/to/sql-scripts/${{ github.event.inputs.sql_script }}.log"
+          sshpass -p "$DB_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $DB_SSH_USER@$DB_SERVER \
+            "bash /path/to/scripts/run-sql.sh $DB_USER $DB_PASSWORD /path/to/sql-scripts/${{ github.event.inputs.sql_script }} > $LOG_FILE 2>&1"
+
+      - name: Copy execution log back to runner
+        env:
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_SSH_USER: ${{ secrets.DB_SSH_USER }}
+          DB_SSH_PASSWORD: ${{ secrets.DB_SSH_PASSWORD }}
+        run: |
+          sshpass -p "$DB_SSH_PASSWORD" scp -o StrictHostKeyChecking=no \
+            $DB_SSH_USER@$DB_SERVER:/path/to/sql-scripts/${{ github.event.inputs.sql_script }}.log .
+
+      - name: Upload SQL execution log as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sql-execution-log
+          path: "${{ github.event.inputs.sql_script }}.log"
