@@ -1,0 +1,36 @@
+name: Run SQL Scripts
+
+on:
+  workflow_dispatch:
+    inputs:
+      scripts_to_run:
+        description: "Specify 'all' or comma-separated SQL script names (e.g., script1.sql,script2.sql)"
+        required: true
+        default: "all"
+
+jobs:
+  run-sql-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set SQL Scripts List
+        id: set_scripts
+        run: |
+          if [ "${{ github.event.inputs.scripts_to_run }}" = "all" ]; then
+            scripts="script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql"
+          else
+            # Convert comma-separated list to space-separated list
+            scripts=$(echo "${{ github.event.inputs.scripts_to_run }}" | tr ',' ' ')
+          fi
+          echo "scripts=$scripts" >> $GITHUB_OUTPUT
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Execute SQL Scripts Sequentially
+        run: |
+          for script in ${{ steps.set_scripts.outputs.scripts }}; do
+            echo "Running $script..."
+            psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -f ./db_scripts/$script
+          done
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
