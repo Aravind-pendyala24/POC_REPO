@@ -1,0 +1,18 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  run-all-sql-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Execute All SQL Scripts
+        run: |
+          for script in script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql; do
+            echo "Running $script..."
+            psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -f ./db_scripts/$script
+          done
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
