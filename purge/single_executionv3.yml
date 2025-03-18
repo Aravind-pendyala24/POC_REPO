@@ -1,0 +1,167 @@
+name: Run SQL Scripts by Region and Collect Logs
+
+on:
+  workflow_dispatch:
+    inputs:
+      scripts_to_run:
+        description: "Specify 'all' or comma-separated SQL script names (e.g., script1.sql,script2.sql)"
+        required: true
+        default: "all"
+      region:
+        description: "Select the region for database execution"
+        required: true
+        type: choice
+        options:
+          - us-east
+          - us-west
+          - eu-central
+          - ap-south
+
+jobs:
+  run-us-east:
+    name: Run SQL Scripts in US-East DB
+    if: ${{ github.event.inputs.region == 'us-east' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set SQL Scripts List
+        id: set_scripts
+        run: |
+          if [ "${{ github.event.inputs.scripts_to_run }}" = "all" ]; then
+            scripts="script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql"
+          else
+            scripts=$(echo "${{ github.event.inputs.scripts_to_run }}" | tr ',' ' ')
+          fi
+          echo "scripts=$scripts" >> $GITHUB_OUTPUT
+
+      - run: mkdir -p sql_logs
+
+      - name: Execute SQL Scripts (US-East)
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PASSWORD_US_EAST }}"
+          for script in ${{ steps.set_scripts.outputs.scripts }}; do
+            echo "Running $script..."
+            log_file="sql_logs/${script%.sql}_us-east.log"
+            psql -h "${{ secrets.DB_HOST_US_EAST }}" \
+                 -U "${{ secrets.DB_USER_US_EAST }}" \
+                 -d "${{ secrets.DB_NAME_US_EAST }}" \
+                 -f ./db_scripts/$script > $log_file 2>&1
+            echo "$script completed for US-East. Log: $log_file"
+          done
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sql-logs-us-east
+          path: sql_logs/
+
+  run-us-west:
+    name: Run SQL Scripts in US-West DB
+    if: ${{ github.event.inputs.region == 'us-west' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set SQL Scripts List
+        id: set_scripts
+        run: |
+          if [ "${{ github.event.inputs.scripts_to_run }}" = "all" ]; then
+            scripts="script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql"
+          else
+            scripts=$(echo "${{ github.event.inputs.scripts_to_run }}" | tr ',' ' ')
+          fi
+          echo "scripts=$scripts" >> $GITHUB_OUTPUT
+
+      - run: mkdir -p sql_logs
+
+      - name: Execute SQL Scripts (US-West)
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PASSWORD_US_WEST }}"
+          for script in ${{ steps.set_scripts.outputs.scripts }}; do
+            echo "Running $script..."
+            log_file="sql_logs/${script%.sql}_us-west.log"
+            psql -h "${{ secrets.DB_HOST_US_WEST }}" \
+                 -U "${{ secrets.DB_USER_US_WEST }}" \
+                 -d "${{ secrets.DB_NAME_US_WEST }}" \
+                 -f ./db_scripts/$script > $log_file 2>&1
+            echo "$script completed for US-West. Log: $log_file"
+          done
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sql-logs-us-west
+          path: sql_logs/
+
+  run-eu-central:
+    name: Run SQL Scripts in EU-Central DB
+    if: ${{ github.event.inputs.region == 'eu-central' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set SQL Scripts List
+        id: set_scripts
+        run: |
+          if [ "${{ github.event.inputs.scripts_to_run }}" = "all" ]; then
+            scripts="script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql"
+          else
+            scripts=$(echo "${{ github.event.inputs.scripts_to_run }}" | tr ',' ' ')
+          fi
+          echo "scripts=$scripts" >> $GITHUB_OUTPUT
+
+      - run: mkdir -p sql_logs
+
+      - name: Execute SQL Scripts (EU-Central)
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PASSWORD_EU_CENTRAL }}"
+          for script in ${{ steps.set_scripts.outputs.scripts }}; do
+            echo "Running $script..."
+            log_file="sql_logs/${script%.sql}_eu-central.log"
+            psql -h "${{ secrets.DB_HOST_EU_CENTRAL }}" \
+                 -U "${{ secrets.DB_USER_EU_CENTRAL }}" \
+                 -d "${{ secrets.DB_NAME_EU_CENTRAL }}" \
+                 -f ./db_scripts/$script > $log_file 2>&1
+            echo "$script completed for EU-Central. Log: $log_file"
+          done
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sql-logs-eu-central
+          path: sql_logs/
+
+  run-ap-south:
+    name: Run SQL Scripts in AP-South DB
+    if: ${{ github.event.inputs.region == 'ap-south' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set SQL Scripts List
+        id: set_scripts
+        run: |
+          if [ "${{ github.event.inputs.scripts_to_run }}" = "all" ]; then
+            scripts="script1.sql script2.sql script3.sql script4.sql script5.sql script6.sql"
+          else
+            scripts=$(echo "${{ github.event.inputs.scripts_to_run }}" | tr ',' ' ')
+          fi
+          echo "scripts=$scripts" >> $GITHUB_OUTPUT
+
+      - run: mkdir -p sql_logs
+
+      - name: Execute SQL Scripts (AP-South)
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PASSWORD_AP_SOUTH }}"
+          for script in ${{ steps.set_scripts.outputs.scripts }}; do
+            echo "Running $script..."
+            log_file="sql_logs/${script%.sql}_ap-south.log"
+            psql -h "${{ secrets.DB_HOST_AP_SOUTH }}" \
+                 -U "${{ secrets.DB_USER_AP_SOUTH }}" \
+                 -d "${{ secrets.DB_NAME_AP_SOUTH }}" \
+                 -f ./db_scripts/$script > $log_file 2>&1
+            echo "$script completed for AP-South. Log: $log_file"
+          done
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sql-logs-ap-south
+          path: sql_logs/
