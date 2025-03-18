@@ -1,0 +1,68 @@
+name: Conditional Checkout and Region-Based Jobs
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_name:
+        description: 'Enter the repository name (e.g., repo-1 or repo-2)'
+        required: true
+        type: string
+      branch:
+        description: 'Enter the branch name (default: main)'
+        required: false
+        default: 'main'
+        type: string
+      region:
+        description: 'Select a region'
+        required: true
+        type: choice
+        options:
+          - us-east
+          - us-west
+          - eu-central
+          - ap-south
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    outputs:
+      repo-path: ${{ github.workspace }}
+    steps:
+      - name: Checkout selected repository and branch
+        uses: actions/checkout@v4
+        with:
+          repository: my-org/${{ github.event.inputs.repo_name }}
+          ref: ${{ github.event.inputs.branch }}
+          token: ${{ secrets.GH_TOKEN }}
+
+  job-us-east:
+    needs: checkout
+    if: github.event.inputs.region == 'us-east'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute job for US East region
+        run: echo "Running job for US East"
+
+  job-us-west:
+    needs: checkout
+    if: github.event.inputs.region == 'us-west'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute job for US West region
+        run: echo "Running job for US West"
+
+  job-eu-central:
+    needs: checkout
+    if: github.event.inputs.region == 'eu-central'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute job for EU Central region
+        run: echo "Running job for EU Central"
+
+  job-ap-south:
+    needs: checkout
+    if: github.event.inputs.region == 'ap-south'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute job for AP South region
+        run: echo "Running job for AP South"
