@@ -1,4 +1,4 @@
-name: Run Shell Script with Inputs
+name: Parse Json
 
 on:
   workflow_dispatch:
