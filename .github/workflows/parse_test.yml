@@ -1,0 +1,10 @@
+
+
+jobs:
+  use-json-variable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse JSON variable
+        run: |
+          echo "${{ vars.MY_JSON_VARIABLE }}" | jq -r '.env'
+          echo "${{ vars.MY_JSON_VARIABLE }}" | jq -r '.replicas'
