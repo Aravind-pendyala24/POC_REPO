@@ -1,4 +1,7 @@
+name: Run Shell Script with Inputs
 
+on:
+  workflow_dispatch:
 
 jobs:
   use-json-variable:
