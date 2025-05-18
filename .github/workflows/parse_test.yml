@@ -11,3 +11,4 @@ jobs:
         run: |
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.env'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
