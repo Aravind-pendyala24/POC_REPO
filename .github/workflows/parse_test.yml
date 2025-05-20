@@ -26,4 +26,5 @@ jobs:
           ip="$(echo '${{ github.event.inputs.value }}' | xargs)"
 
           echo "Looking up key: $ip"
-          echo "$MY_JSON" | jq -r --arg key "$ip" '.[$key]'
+          # echo "$MY_JSON" | jq -r --arg key "$ip" '.[$key]'
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$ip\""
