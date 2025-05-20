@@ -3,6 +3,12 @@ name: Parse Json
 on:
   workflow_dispatch:
 
+   inputs:
+      value:
+        description: 'input'
+        required: false
+        default: none
+
 jobs:
   use-json-variable:
     runs-on: ubuntu-latest
@@ -12,3 +18,5 @@ jobs:
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.env'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
+          envi = "${{ inputs.value }}" >> $GITHUB_ENV 
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$envi\""
