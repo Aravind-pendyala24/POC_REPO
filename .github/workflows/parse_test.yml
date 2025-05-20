@@ -18,5 +18,6 @@ jobs:
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.env'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
-          envi = "${{ inputs.value }}" >> $GITHUB_ENV 
+          envi = "${{ inputs.value }}"
+          echo "envi=$envi" >> $GITHUB_ENV
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$envi\""
