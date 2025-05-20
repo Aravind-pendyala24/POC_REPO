@@ -18,8 +18,12 @@ jobs:
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.env'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
-          #envi="${{ github.event.inputs.value }}"
-          envi="$(echo '${{ github.event.inputs.value }}' | xargs)"
-          echo "ip=$envi" >> $GITHUB_ENV
-          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$ip\""
-          #echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r --arg key "$ip" '.[$key]'
+
+          # Store GitHub variable JSON in a shell variable
+          MY_JSON='${{ vars.MY_JSON_VARIABLE }}'
+
+          # Get input key and trim spaces
+          ip="$(echo '${{ github.event.inputs.value }}' | xargs)"
+
+          echo "Looking up key: $ip"
+          echo "$MY_JSON" | jq -r --arg key "$ip" '.[$key]'
