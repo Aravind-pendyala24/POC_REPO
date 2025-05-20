@@ -19,5 +19,5 @@ jobs:
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
           envi = "${{ github.event.inputs.value }}"
-          echo "envi=$envi" >> $GITHUB_ENV
-          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$envi\""
+          echo "ip=$envi" >> $GITHUB_ENV
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$ip\""
