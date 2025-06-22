@@ -1,0 +1,37 @@
+name: Copy Files to AKS Pod and Restart Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-and-restart:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}  # JSON with Azure service principal credentials
+
+    - name: Set AKS context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: <your-resource-group>
+        cluster-name: <your-aks-cluster-name>
+
+    - name: Get pod name from deployment
+      id: get_pod
+      run: |
+        POD=$(kubectl get pods -l app=test-app-deployment -o jsonpath="{.items[0].metadata.name}")
+        echo "POD_NAME=$POD" >> $GITHUB_ENV
+
+    - name: Copy files to /usr/share in pod
+      run: |
+        kubectl cp ./app "$POD_NAME:/usr/share"
+
+    - name: Restart deployment
+      run: |
+        kubectl rollout restart deployment test-app-deployment
