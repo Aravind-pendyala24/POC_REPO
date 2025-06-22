@@ -1,0 +1,31 @@
+name: Backup XML from API
+
+on:
+  workflow_dispatch:  # Manually triggered
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Fetch XML from API
+      run: |
+        curl -sSL "<YOUR_API_ENDPOINT>" -o bkp.xml
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Commit and push if changed
+      run: |
+        git add bkp.xml
+        if git diff --cached --quiet; then
+          echo "No changes in bkp.xml"
+        else
+          git commit -m "Update bkp.xml from API backup"
+          git push
+        fi
