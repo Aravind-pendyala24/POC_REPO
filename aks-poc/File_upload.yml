@@ -1,0 +1,35 @@
+name: Upload app and src to Azure File Share
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload-to-azure-file-share:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Azure CLI
+      uses: azure/setup-azure-cli@v2
+
+    - name: Upload `app/` to Azure File Share
+      run: |
+        az storage file upload-batch \
+          --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
+          --account-key ${{ secrets.AZURE_STORAGE_KEY }} \
+          --destination ${{ secrets.AZURE_FILE_SHARE_NAME }} \
+          --destination-path app \
+          --source ./app \
+          --no-progress
+
+    - name: Upload `src/` to Azure File Share
+      run: |
+        az storage file upload-batch \
+          --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
+          --account-key ${{ secrets.AZURE_STORAGE_KEY }} \
+          --destination ${{ secrets.AZURE_FILE_SHARE_NAME }} \
+          --destination-path src \
+          --source ./src \
+          --no-progress
