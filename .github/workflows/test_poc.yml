@@ -9,11 +9,9 @@ on:
         required: true
       environment:
         required: true
-      job_type:
-        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Deploying ${{ github.event.inputs.application }} version ${{ github.event.inputs.version }} to ${{ github.event.inputs.environment }} for job ${{ github.event.inputs.job_type }}"
+      - run: echo "Deploying ${{ github.event.inputs.application }} version ${{ github.event.inputs.version }} to ${{ github.event.inputs.environment }}"
