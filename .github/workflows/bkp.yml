@@ -23,3 +23,5 @@ jobs:
           echo "ip=$envi" >> $GITHUB_ENV
           echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$ip\""
           #echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r --arg key "$ip" '.[$key]'
+
+          
