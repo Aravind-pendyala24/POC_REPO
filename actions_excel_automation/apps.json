@@ -1,5 +1,4 @@
 {
-  "":"",
   "app1": { "repo": "POC_REPO", "default_branch": "main" },
   "app2": { "repo": "backend-app2", "default_branch": "release/ui" },
   "billing": { "repo": "service-app3", "default_branch": "release/deploy" },
