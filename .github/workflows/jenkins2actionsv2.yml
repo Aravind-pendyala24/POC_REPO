@@ -1,4 +1,4 @@
-name: Remote Script Execution
+name: Remote Script Execution v1
 
 on:
   #push:
