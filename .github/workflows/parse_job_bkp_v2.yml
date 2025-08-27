@@ -1,0 +1,25 @@
+name: Parse Json_bkp_test
+
+on:
+  workflow_dispatch:
+
+   inputs:
+      value:
+        description: 'input'
+        required: false
+        default: none
+
+jobs:
+  use-json-variable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse JSON variable
+        run: |
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.env'
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.replicas'
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r '.code'
+          #envi="${{ github.event.inputs.value }}"
+          envi="$(echo '${{ github.event.inputs.value }}' | xargs)"
+          echo "ip=$envi" >> $GITHUB_ENV
+          echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r ".\"$ip\""
+          #echo '${{ vars.MY_JSON_VARIABLE }}' | jq -r --arg key "$ip" '.[$key]'
