@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deployment Trigger</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        body {
+            background: #f8fafc;
+        }
+        .card {
+            border-radius: 12px;
+        }
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .form-label .required {
+            color: red;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+        .btn-success {
+            font-weight: 600;
+            transition: 0.2s ease-in-out;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">⚡ Deployment Portal</a>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <!-- Card -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    Trigger GitHub Actions Job
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Application <span class="required">*</span></label>
+                            <select class="form-select" name="application" id="application" required>
+                                <option value="">Select an application</option>
+                                {% for app in applications %}
+                                    <option value="{{ app }}">{{ app }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Version <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="version" placeholder="e.g. v1.2.3" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Environment <span class="required">*</span></label>
+                            <select class="form-select" name="environment" id="environment" required>
+                                <option value="">Select an environment</option>
+                                {% for env in environments %}
+                                    <option value="{{ env }}">{{ env|upper }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Job Type <span class="required">*</span></label>
+                            <select class="form-select" name="job_type" required>
+                                <option value="">Select a job type</option>
+                                {% for job in job_types %}
+                                    <option value="{{ job }}">{{ job|capitalize }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!--<div class="mb-3">
+                            <label class="form-label">Branch <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="branch" placeholder="e.g. main" required>
+                        </div> -->
+
+                        <!--
+                        <div class="mb-3">
+                            <label class="form-label">Comments</label>
+                            <textarea class="form-control" name="comments" rows="3" placeholder="Any additional details (optional)"></textarea>
+                        </div> -->
+
+                        <button type="submit" class="btn btn-success w-100">🚀 Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Inject mapping from Flask into JS
+    const appMap = JSON.parse('{{ applications_map | tojson | safe }}');
+
+    $(document).ready(function() {
+        $('#application').select2({
+            placeholder: "Search for an application...",
+            allowClear: true,
+            width: '100%'
+        });
+        $('#environment').select2({
+            placeholder: "Select an environment...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Prepopulate branch on application change
+        // $('#application').on('change', function() {
+        //     const selectedApp = $(this).val();
+        //     if (selectedApp && appMap[selectedApp] && appMap[selectedApp].default_branch) {
+        //         $('input[name="branch"]').val(appMap[selectedApp].default_branch);
+        //     } else {
+        //         $('input[name="branch"]').val("");
+        //     }
+        // });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
