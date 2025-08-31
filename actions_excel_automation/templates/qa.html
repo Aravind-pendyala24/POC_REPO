@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Knowledge Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+          📖 Documentation Assistant
+        </div>
+        <div class="card-body">
+          <form method="POST">
+          <div class="mb-3">
+              <textarea class="form-control form-control-lg" name="query" rows="3" placeholder="Ask a question or type 'deployment request app1 dev main'..." required style="font-size: 1.1rem;"></textarea>
+          </div>
+            <!--<input type="text" class="form-control control-lg" name="query" rows="3" placeholder="Ask a question..." required> -->
+            <button type="submit" class="btn btn-success">🔍 Search</button>
+          </form>
+
+          {% if query %}
+          <hr>
+          <h6><b>Question:</b> {{ query }}</h6>
+          <p><b>Answer:</b> {{ answer }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
