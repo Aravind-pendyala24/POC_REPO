@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+requests
+atlassian-python-api
+tiktoken
+faiss-cpu
+pydantic
+orjson
+openai   # or azure-ai-openai if you’ll use Azure OpenAI
+langchain-text-splitters
