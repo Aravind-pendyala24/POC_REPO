@@ -1,3 +1,5 @@
+#pip install sentence-transformers faiss-cpu
+
 import os
 import requests
 from bs4 import BeautifulSoup
