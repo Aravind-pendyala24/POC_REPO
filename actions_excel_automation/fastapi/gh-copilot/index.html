@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confluence Chat App</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        #chat-box { width: 100%; height: 300px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; }
+        #query { width: 80%; }
+        #search-btn { padding: 5px 20px; }
+    </style>
+    <script>
+        async function sendQuery() {
+            let query = document.getElementById("query").value;
+            let chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<div><b>You:</b> ${query}</div>`;
+            let resp = await fetch("/chat", {
+                method: "POST",
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `query=${encodeURIComponent(query)}`
+            });
+            let data = await resp.json();
+            chatBox.innerHTML += `<div><b>Bot:</b> ${data.answer}</div>`;
+        }
+    </script>
+</head>
+<body>
+    <h2>Confluence Chat Application</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="query" placeholder="Type your question here..." />
+    <button id="search-btn" onclick="sendQuery()">Search</button>
+</body>
+</html>
