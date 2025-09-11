@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Deployment Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .chat-container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .answer-box {
+      background: #f8f9fa;
+      border-left: 4px solid #0d6efd;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      min-height: 50px;
+      white-space: pre-wrap;
+      font-size: 1rem;
+    }
+    .thinking {
+      font-style: italic;
+      color: #6c757d;
+      margin-top: 20px;
+    }
+    .typing-cursor {
+      display: inline-block;
+      width: 10px;
+      background-color: #0d6efd;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 50% { background-color: #0d6efd; }
+      51%, 100% { background-color: transparent; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="chat-container">
+    <h3 class="mb-4 text-center text-primary">⚡ AI Deployment & Q&A Assistant</h3>
+
+    <form method="POST" action="/answer" onsubmit="showThinking()">
+      <div class="input-group">
+        <input type="text" class="form-control" name="query"
+               placeholder="Ask about deployment or documentation..." required>
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </div>
+    </form>
+
+    <!-- Thinking message -->
+    <div id="thinking" class="thinking" style="display:none;">🤔 Thinking...</div>
+
+    {% if query %}
+    <div class="answer-box mt-4" id="answerBox">
+      <strong>Query:</strong> {{ query }}<br>
+      <strong>Answer:</strong> <span id="typedAnswer"></span>
+    </div>
+    <script>
+      // Typing animation for answer
+      const answerText = `{{ answer|safe }}`;
+      const typedAnswer = document.getElementById("typedAnswer");
+      let i = 0;
+      function typeWriter() {
+        if (i < answerText.length) {
+          typedAnswer.innerHTML += answerText.charAt(i);
+          i++;
+          setTimeout(typeWriter, 25);
+        } else {
+          typedAnswer.innerHTML += "<span class='typing-cursor'></span>";
+        }
+      }
+      typeWriter();
+    </script>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function showThinking() {
+    document.getElementById("thinking").style.display = "block";
+  }
+</script>
+</body>
+</html>
