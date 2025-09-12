@@ -1,0 +1,41 @@
+We have an 2 tier application which does below actions with Gen AI Integration with RAG
+
+Built for answering user queries when the query is submitted in the UI
+Triggering GitHub Actions when the deployment request is submitted 
+
+Below is the Technical Implementation for Answering user queries and Triggering Github Actions Workflows for Architecture diagram
+Application fetches documents from confluence api using page ids and using Retrieval Augmented Generation 
+Embedding the retrieved confluence data using Azure Open AI Embedding model 
+Store the embedded data in Faiss vector store.
+We also have a capability where when the new page ids of confluence are detected in the configutation then onlu the new embedding will happen keeping the embeddings on demand.For this we create a metdata json which consists of pageid,Title of confluence along the unique commmit hash
+Once the question is submitted we use the Azure Open AI LLM model and answer the user query based on the retrieved confluence context with strict instruction along the prompt provided by the user
+To trigger Github Actions Workflows we have Github API and Regular Expression where the user query should be in a specific format (Ex: Deploy app1 version 1.0 in dev environment)
+Once the Workflow is triggered successfully, we provide the run url of the job as the Answer.
+We also load the app name , version , branch , environment , status message in an excel for audit purpose
+
+Tech Stack
+Python with FastAPI
+Confluence API
+Azure Open AI for LLM and Embedding models
+Faiss for Vector store
+GitHub API
+OpenPyxl for Excel writes
+HTML with JS for UI
+
+So consider all the above mentioned details and provide me a professional downloadable presentation with the below slides
+
+1.A Clear problem statement 
+2.Target audience 
+3.Summary of the proposed solution 
+4.Why is the solution unique 
+5.Any innovation
+6.How about scalability 
+7.Architecture diagram 
+8.Key features 
+9.Tech stack 
+10.Impact of the solution 
+11.What else can be applied 
+12.Next steps that could be done with more time or resources.
+
+Make sure the presentation well prepared with Attractive designs and good font.
+
