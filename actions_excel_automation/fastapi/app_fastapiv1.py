@@ -191,9 +191,14 @@ async def home(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def search(request: Request, query: str = Form(...)):
-    refresh_vectorstore()
+    #refresh_vectorstore()
     answer, results = answer_query(query)
     return templates.TemplateResponse(
         "qa.html",
         {"request": request, "query": query, "answer": answer, "results": results}
     )
+
+@app.post("/admin/refresh")
+async def admin_refresh():
+    refresh_vectorstore()
+    return {"status": "Vector store refreshed"}
