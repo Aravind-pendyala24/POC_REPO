@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Deployment & Q&A Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .container-card { max-width: 1000px; margin: 40px auto; }
+    .card { border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .answer-box { background: #fff; border-left: 4px solid #0d6efd; padding: 15px; border-radius: 8px; margin-top: 20px; white-space: pre-wrap; }
+    .jira-table td, .jira-table th { vertical-align: middle; }
+    .jql-box { background:#fffbea; border-left:4px solid #f59e0b; padding:12px; border-radius:6px; margin-top:12px; font-family: monospace; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+<div class="container container-card">
+  <div class="card p-4">
+    <h3 class="text-center text-primary mb-4">⚡ AI Search & Deployment Assistant</h3>
+
+    <form method="POST" action="/answer" id="queryForm">
+      <div class="mb-3">
+        <label for="query" class="form-label">Ask a question or type a command (e.g. "List all open tickets in the board")</label>
+        <textarea class="form-control" id="query" name="query" rows="2" placeholder="Ask about deployment or documentation..." required>{% if query %}{{ query }}{% endif %}</textarea>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Submit</button>
+        <button id="clearBtn" type="button" class="btn btn-outline-secondary">Clear</button>
+      </div>
+    </form>
+
+    <!-- If generated JQL exists, show it and give Run / Cancel options -->
+    {% if generated_jql %}
+      <hr>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h5 class="mb-1">Generated JQL</h5>
+          <small class="text-muted">Review the JQL below. Click <strong>Run JQL</strong> to execute and fetch results from Jira.</small>
+        </div>
+        <div class="text-end">
+          <form method="POST" action="/execute_jql" style="display:inline;">
+            <input type="hidden" name="jql" value="{{ generated_jql }}">
+            <input type="hidden" name="limit" value="{{ generated_limit }}">
+            <button class="btn btn-sm btn-primary" type="submit">Run JQL</button>
+          </form>
+          <form method="GET" action="/" style="display:inline;">
+            <button class="btn btn-sm btn-outline-secondary">Cancel</button>
+          </form>
+        </div>
+      </div>
+      <div class="jql-box">{{ generated_jql }}</div>
+    {% endif %}
+
+    {% if jira_issues %}
+      <hr>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Jira - Issues</h5>
+        <form method="POST" action="/refresh_jira" class="d-flex">
+          <input type="hidden" name="board_id" value="{{ request.query_params.get('board_id', '') }}">
+          <button class="btn btn-sm btn-outline-primary" type="submit">Refresh</button>
+        </form>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped jira-table">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Key</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Assignee</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for issue in jira_issues %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ issue.key }}</td>
+                <td>{{ issue.summary }}</td>
+                <td>{{ issue.status }}</td>
+                <td>{{ issue.assignee or "Unassigned" }}</td>
+                <td>
+                  {% if issue.url %}
+                    <a target="_blank" href="{{ issue.url }}" class="btn btn-sm btn-outline-secondary">Open</a>
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    {% if answer %}
+      <hr>
+      <div class="answer-box">
+        <strong>Query:</strong> {{ query }}<br><br>
+        <strong>Answer:</strong><br>
+        {{ answer|safe }}
+      </div>
+    {% endif %}
+
+    {% if results %}
+      <hr>
+      <h5>Sources</h5>
+      <ul>
+        {% for r in results %}
+          <li><strong>{{ r.title }}</strong> — chunk {{ r.chunk_idx }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.getElementById("clearBtn").addEventListener("click", function(){ document.getElementById("query").value = ""; });
+</script>
+</body>
+</html>
