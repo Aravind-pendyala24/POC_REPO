@@ -1,0 +1,39 @@
+Designed and implemented an end-to-end MLOps workflow, covering model training, versioning, deployment, serving, scaling, and lifecycle management.
+
+Built and productionized ML models with a clear separation of concerns between model logic, serving layer, and infrastructure, following MLOps best practices.
+
+Implemented custom model serving using Flask + Gunicorn (WSGI) to understand low-level model serving before adopting managed platforms.
+
+Containerized ML workloads using Docker, ensuring reproducible builds and immutable model artifacts across environments.
+
+Deployed ML models on Kubernetes clusters, implementing Deployments, Services, and Ingress for scalable and resilient inference.
+
+Implemented KServe-based model serving, leveraging standardized inference APIs and cloud-native model deployment patterns.
+
+Worked hands-on with KServe predictors, understanding model formats, storage backends, autoscaling behavior, and request/response contracts.
+
+Compared and evaluated custom Flask-based serving vs KServe-managed serving, identifying trade-offs in scalability, operability, and maintenance.
+
+Integrated external model artifact storage (S3 and HTTP-based endpoints) for decoupled model deployment in Kubernetes.
+
+Implemented AWS SageMaker end-to-end workflows, covering model training, deployment, and managed inference endpoints.
+
+Understood and applied SageMaker Domain, User Profiles, and IAM execution roles, aligning ML access control with enterprise security practices.
+
+Designed IAM-based role separation for Data Scientists, ML Engineers, and MLOps Engineers within SageMaker environments.
+
+Deployed and tested SageMaker-hosted inference endpoints, validating real-time prediction workflows.
+
+Built auto-scaling model-serving architectures using AWS Auto Scaling Groups and Application Load Balancers.
+
+Designed high-availability inference architectures using load balancers to distribute prediction traffic across replicas.
+
+Implemented cloud-native bootstrapping using EC2 user-data, enabling automated ML service provisioning without manual intervention.
+
+Applied MLOps automation principles using CI concepts to automate model training, artifact generation, and deployment readiness.
+
+Followed production ML design principles, including stateless inference, horizontal scalability, and environment reproducibility.
+
+Gained hands-on experience with MLOps tooling across VMs, Kubernetes, and managed cloud services, understanding when to use each approach.
+
+Developed a strong understanding of real-world MLOps responsibilities, including model reliability, deployment safety, infrastructure automation, and operational scalability.
