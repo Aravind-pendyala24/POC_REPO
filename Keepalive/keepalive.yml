@@ -1,0 +1,36 @@
+name: Refresh Scheduled Workflows
+
+on:
+  schedule:
+    - cron: "0 2 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update scheduled workflows
+        run: |
+          find .github/workflows -type f \( -name "*.yml" -o -name "*.yaml" \) | while read file
+          do
+            if grep -q "schedule:" "$file"; then
+              sed -i "1s|^|# keepalive $(date)\n|" "$file"
+            fi
+          done
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions@users.noreply.github.com"
+
+          git add .github/workflows/*.yml .github/workflows/*.yaml
+
+          git diff --cached --quiet || git commit -m "chore: refresh workflow actor"
+
+          git push
