@@ -33,7 +33,8 @@ Treat these rules as STRICT.
 1. Find all `.tf` files
 2. Identify module blocks:
 
-```module "<name>" {
+```
+module "<name>" {
   source  = "<source>"
   version = "<version>"
 }
