@@ -1,0 +1,95 @@
+name: Refresh Workflows via PR
+
+on:
+  schedule:
+    - cron: "0 2 1 * *"
+  workflow_dispatch:
+
+jobs:
+  update-workflows:
+    runs-on: self-hosted   # 👈 key change
+
+    steps:
+      # 1. Checkout using service account PAT
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+
+      # 2. Configure Git identity
+      - name: Configure Git
+        run: |
+          git config user.name "devops-service-account"
+          git config user.email "devops-service-account@users.noreply.github.com"
+
+      # 3. Create branch
+      - name: Create branch
+        run: |
+          BRANCH="workflow-refresh-$(date +%s)"
+          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+          git checkout -b $BRANCH
+
+      # 4. Update workflows
+      - name: Update workflows
+        run: |
+          find .github/workflows -type f \( -name "*.yml" -o -name "*.yaml" \) | while read file
+          do
+            if grep -q "schedule:" "$file"; then
+              sed -i "1s|^|# keepalive $(date)\n|" "$file"
+            fi
+          done
+
+      # 5. Commit changes (skip if no changes)
+      - name: Commit changes
+        run: |
+          git add .github/workflows/*.yml .github/workflows/*.yaml
+          if git diff --cached --quiet; then
+            echo "No changes detected. Exiting."
+            exit 0
+          fi
+          git commit -m "chore: refresh workflow actor"
+
+      # 6. Push branch
+      - name: Push branch
+        run: |
+          git push origin $BRANCH_NAME
+
+      # 7. Install GitHub CLI (only if not present)
+      - name: Install gh CLI (if needed)
+        run: |
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            sudo apt-get update
+            sudo apt-get install -y gh
+          fi
+
+      # 8. Create PR
+      - name: Create Pull Request
+        id: pr
+        run: |
+          PR_URL=$(gh pr create \
+            --title "chore: refresh workflow actor" \
+            --body "Automated update to keep scheduled workflows active" \
+            --base main \
+            --head $BRANCH_NAME \
+            --reviewer reviewer1,reviewer2 \
+            --json url \
+            --jq '.url')
+
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+
+      # 9. Send Email Notification
+      - name: Send Email
+        run: |
+          echo "Subject: Workflow Refresh PR" > mail.txt
+          echo "" >> mail.txt
+          echo "PR created: $PR_URL" >> mail.txt
+
+          curl --url "smtp://${{ secrets.SMTP_SERVER }}:${{ secrets.SMTP_PORT }}" \
+            --ssl-reqd \
+            --mail-from "${{ secrets.SMTP_USERNAME }}" \
+            --mail-rcpt "${{ secrets.EMAIL_TO }}" \
+            --upload-file mail.txt \
+            --user "${{ secrets.SMTP_USERNAME }}:${{ secrets.SMTP_PASSWORD }}"
