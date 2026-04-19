@@ -34,16 +34,16 @@ jobs:
           echo "current=$CURRENT" >> $GITHUB_OUTPUT
 
       # 🔍 Check if heading exists
-      - name: Check changelog heading
-        id: check
-        run: |
-          VERSION=${{ steps.version.outputs.current }}
+      # - name: Check changelog heading
+      #   id: check
+      #   run: |
+      #     VERSION=${{ steps.version.outputs.current }}
 
-          if grep -q "## Release $VERSION" CHANGELOG.md; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
+      #     if grep -q "## Release $VERSION" CHANGELOG.md; then
+      #       echo "exists=true" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "exists=false" >> $GITHUB_OUTPUT
+      #     fi
 
       # 🔢 Bump version ONLY if heading not present
       - name: Bump version
