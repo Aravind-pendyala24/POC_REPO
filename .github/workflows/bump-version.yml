@@ -1,0 +1,104 @@
+name: Manual Version Bump and Changelog Update
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 🚫 Restrict branches
+      - name: Validate branch
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+
+          echo "Current branch: $BRANCH"
+
+          if [[ "$BRANCH" != feature/* && "$BRANCH" != bugfix/* ]]; then
+            echo "❌ This workflow is only allowed on feature/* or bugfix/* branches"
+            exit 1
+          fi
+
+      # 📦 Read current version
+      - name: Read version
+        id: version
+        run: |
+          CURRENT=$(jq -r '.current_version' version.json)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      # 🔍 Check if heading exists
+      - name: Check changelog heading
+        id: check
+        run: |
+          VERSION=${{ steps.version.outputs.current }}
+
+          if grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 🔢 Bump version ONLY if heading not present
+      - name: Bump version
+        id: bump
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          CURRENT=${{ steps.version.outputs.current }}
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          PATCH=$((PATCH+1))
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+
+          echo "new=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      # 📝 Update version.json
+      - name: Update version.json
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          jq --arg new "${{ steps.bump.outputs.new }}" \
+             --arg curr "${{ steps.version.outputs.current }}" \
+             '.previous_version=$curr | .current_version=$new' \
+             version.json > temp.json
+
+          mv temp.json version.json
+
+      # 📄 Add new heading
+      - name: Update CHANGELOG.md
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          VERSION=${{ steps.bump.outputs.new }}
+
+          awk -v ver="$VERSION" '
+          NR==1 {print; print ""; print "## [" ver "]"; next}
+          {print}
+          ' CHANGELOG.md > temp.md
+
+          mv temp.md CHANGELOG.md
+
+      # 💾 Commit changes
+      - name: Commit changes
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add version.json CHANGELOG.md
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.new }}"
+
+      - name: Push changes
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git push
+
+      # 🟡 Skip message
+      - name: Skip message
+        if: steps.check.outputs.exists == 'true'
+        run: echo "✅ Version already exists in CHANGELOG.md. Skipping."
