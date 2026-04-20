@@ -1,0 +1,24 @@
+name: Validate Changelog Between Versions
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  validate-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Make script executable
+        run: chmod +x scripts/check_changelog_between_versions.sh
+
+      - name: Run changelog validation
+        run: |
+          ./scripts/check_changelog_between_versions.sh \
+            "${{ github.base_ref }}" \
+            "CHANGELOG.md" \
+            "version.json"
